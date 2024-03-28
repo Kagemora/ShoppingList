@@ -3,14 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:screenOrientation="fullSensor"
-        android:allowBackup="true"
         android:name=".ShopApplication"
+        android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:screenOrientation="fullSensor"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShopingList"
         tools:targetApi="31">
@@ -26,6 +26,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name=".data.provider.ShopListProvider"
+            android:authorities="com.example.shopinglist"
+            android:exported="true" />
     </application>
 
 </manifest>
