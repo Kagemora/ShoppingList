@@ -1,9 +1,7 @@
 package com.example.shopinglist.data.repository
 
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import com.example.shopinglist.data.bd.AppDatabase
 import com.example.shopinglist.data.bd.ShopListDao
 import com.example.shopinglist.data.mapper.ShopListMapper
 import com.example.shopinglist.domain.entities.ShopItem

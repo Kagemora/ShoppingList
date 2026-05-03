@@ -1,14 +1,11 @@
 package com.example.shopinglist.presentation.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.shopinglist.data.repository.ShopListRepositoryImpl
+import com.example.shopinglist.domain.entities.ShopItem
 import com.example.shopinglist.domain.usecase.DeleteItemUseCase
 import com.example.shopinglist.domain.usecase.EditShopItemUseCase
 import com.example.shopinglist.domain.usecase.GetShopListUseCase
-import com.example.shopinglist.domain.entities.ShopItem
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

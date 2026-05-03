@@ -5,10 +5,10 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
-import com.example.shopinglist.R
-import com.example.shopinglist.databinding.ItemShopDisabledBinding
-import com.example.shopinglist.databinding.ItemShopEnabledBinding
 import com.example.shopinglist.domain.entities.ShopItem
+import com.kagemora.shoppinglist.R
+import com.kagemora.shoppinglist.databinding.ItemShopDisabledBinding
+import com.kagemora.shoppinglist.databinding.ItemShopEnabledBinding
 
 class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(
     ShopItemDiffCallback()

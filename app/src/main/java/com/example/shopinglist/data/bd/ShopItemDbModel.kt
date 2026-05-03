@@ -11,4 +11,4 @@ class ShopItemDbModel(
     val count: Int,
     val enabled: Boolean,
 
-)
+    )

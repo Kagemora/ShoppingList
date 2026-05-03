@@ -2,11 +2,10 @@ package com.example.shopinglist.presentation.view
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.shopinglist.R
+import androidx.appcompat.app.AppCompatActivity
 import com.example.shopinglist.domain.entities.ShopItem
-import java.lang.RuntimeException
+import com.kagemora.shoppinglist.R
 
 class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
     private var screenMode = MODE_UNKNOWN
@@ -16,10 +15,11 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
         parseIntent()
-        if(savedInstanceState==null){
+        if (savedInstanceState == null) {
             launchRightMode()
         }
     }
+
     private fun launchRightMode() {
         val fragment = when (screenMode) {
             MODE_EDIT -> ShopItemFragment.newInstanceEditItem(shopItemId)
@@ -27,9 +27,10 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             else -> throw RuntimeException("Unknown screen mode $screenMode")
         }
         supportFragmentManager.beginTransaction()
-            .replace(R.id.shop_item_container,fragment)
+            .replace(R.id.shop_item_container, fragment)
             .commit()
     }
+
     private fun parseIntent() {
         //Проверяет наличие дополнительного параметра в интенте с ключом EXTRA_SCREEN_MODE.
         //Если параметр отсутствует, выбрасывается исключение типа RuntimeException с сообщением
@@ -65,13 +66,15 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         private const val MODE_EDIT = "mode_edit"
         private const val MODE_ADD = "mode_add"
         private const val MODE_UNKNOWN = ""
-//открытие экрана добавления
+
+        //открытие экрана добавления
         fun newIntentAddItem(context: Context): Intent {
             val intent = Intent(context, ShopItemActivity::class.java)
             intent.putExtra(EXTRA_SCREEN_MODE, MODE_ADD)
             return intent
         }
-//открытие экрана редактирование
+
+        //открытие экрана редактирование
         fun newIntentEditItem(context: Context, shopItemId: Int): Intent {
             val intent = Intent(context, ShopItemActivity::class.java)
             intent.putExtra(EXTRA_SCREEN_MODE, MODE_EDIT)

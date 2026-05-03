@@ -5,16 +5,30 @@ import android.content.ContentValues
 import android.content.UriMatcher
 import android.database.Cursor
 import android.net.Uri
-import android.util.Log
+import com.example.shopinglist.ShopApplication
+import com.example.shopinglist.data.bd.ShopListDao
+import com.example.shopinglist.data.mapper.ShopListMapper
+import com.example.shopinglist.domain.entities.ShopItem
+import javax.inject.Inject
 
 class ShopListProvider : ContentProvider() {
-
-    private val uriMatcher = UriMatcher(UriMatcher.NO_MATCH).apply {
-        addURI("com.example.shopinglist","shop_items", GET_SHOP_ITEMS_QUERY)
-        addURI("com.example.shopinglist","shop_items/#", GET_SHOP_ITEMS_QUERY_NUMBER )
-        addURI("com.example.shopinglist","shop_items/*", GET_SHOP_ITEMS_QUERY_STRING )
+    private val component by lazy {
+        (context as ShopApplication).component
     }
+
+    @Inject
+    lateinit var shopListDao: ShopListDao
+
+    @Inject
+    lateinit var mapper: ShopListMapper
+    private val uriMatcher = UriMatcher(UriMatcher.NO_MATCH).apply {
+        addURI("com.example.shopinglist", "shop_items", GET_SHOP_ITEMS_QUERY)
+        addURI("com.example.shopinglist", "shop_items/#", GET_SHOP_ITEMS_QUERY_NUMBER)
+        addURI("com.example.shopinglist", "shop_items/*", GET_SHOP_ITEMS_QUERY_STRING)
+    }
+
     override fun onCreate(): Boolean {
+        component.inject(this)
         return true
     }
 
@@ -25,20 +39,15 @@ class ShopListProvider : ContentProvider() {
         selectionArgs: Array<out String>?,
         sortOrder: String?
     ): Cursor? {
-        val code = uriMatcher.match(uri)
-        when(code){
-            GET_SHOP_ITEMS_QUERY ->{
-
+        return when (uriMatcher.match(uri)) {
+            GET_SHOP_ITEMS_QUERY -> {
+                shopListDao.getShopListCursor()
             }
-            GET_SHOP_ITEMS_QUERY_NUMBER ->{
 
-            }
-            GET_SHOP_ITEMS_QUERY_STRING ->{
-
+            else -> {
+                null
             }
         }
-        Log.d("ShopListProvider", "query $uri code $code ")
-        return null
     }
 
     override fun getType(uri: Uri): String? {
@@ -46,11 +55,33 @@ class ShopListProvider : ContentProvider() {
     }
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
-        TODO("Not yet implemented")
+        when (uriMatcher.match(uri)) {
+            GET_SHOP_ITEMS_QUERY -> {
+                if (values == null) return null
+                val id = values.getAsInteger("id")
+                val name = values.getAsString("name")
+                val count = values.getAsInteger("count")
+                val enabled = values.getAsBoolean("enabled")
+                val shopItem = ShopItem(
+                    id = id,
+                    name = name,
+                    count = count,
+                    enabled = enabled
+                )
+                shopListDao.addShopItemSync(mapper.mapEntityToDbModel(shopItem))
+            }
+        }
+        return null
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
-        TODO("Not yet implemented")
+        when (uriMatcher.match(uri)) {
+            GET_SHOP_ITEMS_QUERY -> {
+                val id = selectionArgs?.get(0)?.toInt() ?: -1
+                return shopListDao.deleteShopItemSycn(id)
+            }
+        }
+        return 0
     }
 
     override fun update(
@@ -61,7 +92,8 @@ class ShopListProvider : ContentProvider() {
     ): Int {
         TODO("Not yet implemented")
     }
-    companion object{
+
+    companion object {
         private const val GET_SHOP_ITEMS_QUERY = 100
         private const val GET_SHOP_ITEMS_QUERY_NUMBER = 200
         private const val GET_SHOP_ITEMS_QUERY_STRING = 300

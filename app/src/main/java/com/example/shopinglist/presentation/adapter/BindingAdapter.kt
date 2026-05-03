@@ -1,20 +1,22 @@
 package com.example.shopinglist.presentation.adapter
 
 import androidx.databinding.BindingAdapter
-import com.example.shopinglist.R
+
 import com.google.android.material.textfield.TextInputLayout
+import com.kagemora.shoppinglist.R
 
 @BindingAdapter("errorInputName")
-fun bindErrorInputName(textInputLayout:TextInputLayout, isError:Boolean){
+fun bindErrorInputName(textInputLayout: TextInputLayout, isError: Boolean) {
     val message = if (isError) {
-       textInputLayout.context.getString(R.string.error_input_name)
+        textInputLayout.context.getString(R.string.error_input_name)
     } else {
         null
     }
-   textInputLayout.error = message
+    textInputLayout.error = message
 }
+
 @BindingAdapter("errorInputCount")
-fun bindErrorInputCount(textInputLayout:TextInputLayout, isError:Boolean){
+fun bindErrorInputCount(textInputLayout: TextInputLayout, isError: Boolean) {
     val message = if (isError) {
         textInputLayout.context.getString(R.string.error_input_count)
     } else {

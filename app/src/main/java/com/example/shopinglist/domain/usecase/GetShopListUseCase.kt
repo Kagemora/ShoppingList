@@ -5,11 +5,11 @@ import com.example.shopinglist.domain.entities.ShopItem
 import com.example.shopinglist.domain.repository.ShopListRepository
 import javax.inject.Inject
 
-class GetShopListUseCase@Inject constructor(
+class GetShopListUseCase @Inject constructor(
     private val shopListRepository: ShopListRepository
 ) {
 
-   fun getShopList():LiveData<List<ShopItem>>{
+    fun getShopList(): LiveData<List<ShopItem>> {
         return shopListRepository.getShopList()
     }
 }

@@ -1,6 +1,8 @@
 package com.example.shopinglist.presentation.view
 
+import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,12 +13,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.shopinglist.ShopApplication
-import com.example.shopinglist.databinding.FragmentShopItemBinding
-import com.example.shopinglist.di.ApplicationComponent
 import com.example.shopinglist.domain.entities.ShopItem
 import com.example.shopinglist.presentation.viewmodel.ShopItemViewModel
 import com.example.shopinglist.presentation.viewmodel.ViewModelFactory
+import com.kagemora.shoppinglist.databinding.FragmentShopItemBinding
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 class ShopItemFragment : Fragment() {
 
@@ -30,9 +32,9 @@ class ShopItemFragment : Fragment() {
         (requireActivity().application as ShopApplication).component
     }
 
-    private var _binding:FragmentShopItemBinding? = null
-    private val binding:FragmentShopItemBinding
-        get() = _binding?:throw RuntimeException("FragmentShopItemBinding == null")
+    private var _binding: FragmentShopItemBinding? = null
+    private val binding: FragmentShopItemBinding
+        get() = _binding ?: throw RuntimeException("FragmentShopItemBinding == null")
 
     private var screenMode: String = MODE_UNKNOWN
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
@@ -41,8 +43,8 @@ class ShopItemFragment : Fragment() {
         super.onAttach(context)
         if (context is OnEditingFinishedListener) {
             onEditingFinishedListener = context
-        }else{
-            throw java.lang.RuntimeException("Activity must implement OnEditingFinishedListener")
+        } else {
+            throw RuntimeException("Activity must implement OnEditingFinishedListener")
         }
     }
 
@@ -57,13 +59,13 @@ class ShopItemFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding =  FragmentShopItemBinding.inflate(inflater, container, false)
+        _binding = FragmentShopItemBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this,viewModelFactory)[ShopItemViewModel::class.java]
+        viewModel = ViewModelProvider(this, viewModelFactory)[ShopItemViewModel::class.java]
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
         addTextChangeListeners()
@@ -116,13 +118,30 @@ class ShopItemFragment : Fragment() {
     private fun launchEditMode() {
         viewModel.getShopItem(shopItemId)
         binding.saveButton.setOnClickListener {
-            viewModel.editShopItem(binding.etName.text?.toString(), binding.etCount.text?.toString())
+            viewModel.editShopItem(
+                binding.etName.text?.toString(),
+                binding.etCount.text?.toString()
+            )
         }
     }
 
     private fun launchAddMode() {
         binding.saveButton.setOnClickListener {
-            viewModel.addShopItem(binding.etName.text?.toString(), binding.etCount.text?.toString())
+//            viewModel.addShopItem(
+//                binding.etName.text?.toString(),
+//                binding.etCount.text?.toString()
+//            )
+            thread {
+                context?.contentResolver?.insert(
+                    Uri.parse("content://com.example.shopinglist/shop_items"),
+                    ContentValues().apply {
+                        put("id", 0)
+                        put("name", binding.etName.text?.toString())
+                        put("count", binding.etCount.text?.toString()?.toInt())
+                        put("enabled", true)
+                    }
+                )
+            }
         }
     }
 

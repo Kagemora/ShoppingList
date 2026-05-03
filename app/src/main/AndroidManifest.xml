@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:name=".ShopApplication"
+        android:name="com.example.shopinglist.ShopApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -15,10 +15,10 @@
         android:theme="@style/Theme.ShopingList"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.view.ShopItemActivity"
+            android:name="com.example.shopinglist.presentation.view.ShopItemActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.view.MainActivity"
+            android:name="com.example.shopinglist.presentation.view.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,7 +28,7 @@
         </activity>
 
         <provider
-            android:name=".data.provider.ShopListProvider"
+            android:name="com.example.shopinglist.data.provider.ShopListProvider"
             android:authorities="com.example.shopinglist"
             android:exported="true" />
     </application>

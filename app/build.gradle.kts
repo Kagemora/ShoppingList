@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.shopinglist"
+    namespace = "com.kagemora.shoppinglist"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.shopinglist"
+        applicationId = "com.kagemora.shoppinglist"
         minSdk = 23
         targetSdk = 34
         versionCode = 1

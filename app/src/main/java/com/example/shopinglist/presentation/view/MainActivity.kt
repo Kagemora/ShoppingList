@@ -2,20 +2,22 @@ package com.example.shopinglist.presentation.view
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.example.shopinglist.R
 import com.example.shopinglist.ShopApplication
-import com.example.shopinglist.databinding.ActivityMainBinding
-import com.example.shopinglist.presentation.viewmodel.MainViewModel
+import com.example.shopinglist.domain.entities.ShopItem
 import com.example.shopinglist.presentation.adapter.ShopListAdapter
-import com.example.shopinglist.presentation.viewmodel.MainViewModel_Factory
+import com.example.shopinglist.presentation.viewmodel.MainViewModel
 import com.example.shopinglist.presentation.viewmodel.ViewModelFactory
+import com.kagemora.shoppinglist.R
+import com.kagemora.shoppinglist.databinding.ActivityMainBinding
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
     private lateinit var viewModel: MainViewModel
@@ -35,7 +37,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupRecyclerView()
-        viewModel = ViewModelProvider(this,viewmodelFactory)[MainViewModel::class.java]
+        viewModel = ViewModelProvider(this, viewmodelFactory)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)//новый метод submitList для ресайклервью
             //если нужно обновить список вызываем submitList
@@ -48,13 +50,29 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                 lauchFragment(ShopItemFragment.newInstanceAddItem())
             }
         }
-        contentResolver.query(
-            Uri.parse("content://com.example.shopinglist/shop_items"),
-            null,
-            null,
-            null,
-            null
-        )
+        thread {
+            val cursor = contentResolver.query(
+                Uri.parse("content://com.example.shopinglist/shop_items"),
+                null,
+                null,
+                null,
+                null
+            )
+            while (cursor?.moveToNext() == true) {//изначально курсор стоит на -1, потом он проваливается
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+                val count = cursor.getInt(cursor.getColumnIndexOrThrow("count"))
+                val enabled = cursor.getInt(cursor.getColumnIndexOrThrow("enabled")) > 0
+                val shopItem = ShopItem(
+                    id = id,
+                    name = name,
+                    count = count,
+                    enabled = enabled
+                )
+                Log.d("MainActivity", shopItem.toString())
+            }
+            cursor?.close()
+        }
     }
 
     override fun onEditingFinished() {
@@ -123,7 +141,14 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                 val item =
                     shopListAdapter.currentList[viewHolder.adapterPosition] //используем новый метод для получения текущей позиции элемента
                 //currentList если нужно получить текущий список с которым работает адаптер 
-                viewModel.deleteShopItem(item)//удаляем из базы
+//                viewModel.deleteShopItem(item)//удаляем из базы
+                thread {
+                    contentResolver.delete(
+                        Uri.parse("content://com.example.shopinglist/shop_items"),
+                        null,
+                        arrayOf(item.id.toString())
+                    )
+                }
             }
 
         }
